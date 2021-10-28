@@ -1,0 +1,15 @@
+{
+   "author": "Manuel Castillo",
+   "browser_action": {
+      "default_icon": "icon.png"
+   },
+   "content_scripts": [ {
+      "js": [ "content.js", "jquery.js" ],
+      "matches": [ "https://www.linkedin.com/*" ]
+   } ],
+   "description": "Video Subtitle Google Translate for Website Like LinkedIn Learning",
+   "manifest_version": 2,
+   "name": "Subtitle Translate X (LinkedIn Learning)",
+   "short_name": "Subtitle Translator X",
+   "version": "1.0"
+}
