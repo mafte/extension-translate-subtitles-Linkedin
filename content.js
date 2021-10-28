@@ -1,24 +1,58 @@
 if (window.location.hostname == "www.linkedin.com") {
-    console.log("Traduciendo subtitulos");
 
     window.onload = function () {
 
-        /** Cambiamos el atributo de traduccion para permitirla */
-        $("html").attr("translate", "yes");
+        if ($('.classroom-media-screens').length != 0) {
 
-        /** Presionamos el tab con la transcripcion */
-        $(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
-        var oldURL = "";
-        var currentURL = window.location.href;
-        console.log("oldURL:" + oldURL);
-        console.log("currentURL:" + currentURL);
+            console.log("Traduciendo subtitulos");
 
 
-        function checkURLchange(currentURL) {
+            /** Cambiamos el atributo de traduccion para permitirla */
+            $("html").attr("translate", "yes");
 
-            if (currentURL != oldURL) {
+            /** Presionamos el tab con la transcripcion */
+            $(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
+
+            /** Añadimos estilos necesarios */
+            var styles = `
+            .caption-custom{
+                position: absolute;
+                z-index: 1;
+                bottom: 78px;
+                pointer-events: none;
+                -webkit-transition: bottom .5s ease-in-out;
+                transition: bottom .5s ease-in-out;
+                background: black;
+                padding: .5rem 1rem;
+            }
+
+            .classroom-media-screens .classroom-transcript{
+                visibility: hidden;
+                position: fixed;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+                width: 100vw;
+                z-index: 999999;
+            }
+
+            .classroom-media-screens .classroom-transcript .t-16{font-size:10px;}
+            `;
+
+            var styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.innerText = styles;
+            document.head.appendChild(styleSheet);
+
+            $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
+
+
+            function checkURLchange() {
+
                 /** Presionamos el tab con la transcripcion */
                 $(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
+
+                $('.classroom-transcript').prependTo('.classroom-layout');
 
                 setTimeout(function () {
                     $('.classroom-transcript__content .content-transcript-line').each(function (i, obj) {
@@ -27,35 +61,14 @@ if (window.location.hostname == "www.linkedin.com") {
                         //Establecer atributos en segundos
                         $(this).attr('data-sg', Number(Number(idTranscriptionSlice) / 1000).toFixed());
                     })
-                }, 1000);
+                }, 100);
 
-
+                //Establecer el primer comentario en el video
+                let firstComment = $("[data-sg='1']").text();
+                $('.caption-custom').text(firstComment);
 
                 let videoE = document.getElementById("vjs_video_3_html5_api");
                 if (videoE) {
-
-                    var styles = `
-                            .caption-custom{
-                                position: absolute;
-                                z-index: 1;
-                                bottom: 78px;
-                                pointer-events: none;
-                                -webkit-transition: bottom .5s ease-in-out;
-                                transition: bottom .5s ease-in-out;
-                                background: black;
-                                padding: .5rem 1rem;
-                            }
-                    `
-
-                    var styleSheet = document.createElement("style");
-                    styleSheet.type = "text/css";
-                    styleSheet.innerText = styles;
-                    document.head.appendChild(styleSheet);
-
-                    $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
-                    
-                    console.log("Sigue el proceso normal");
-
 
                     videoE.addEventListener('timeupdate', (e) => {
 
@@ -80,23 +93,20 @@ if (window.location.hostname == "www.linkedin.com") {
                     });
                 }
 
-                oldURL = currentURL;
             }
 
-            oldURL = window.location.href;
             setTimeout(function () {
-                checkURLchange(window.location.href);
-            }, 1000);
+                checkURLchange();
+            }, 500);
+
+
+            $(".classroom-toc-item__link").click(function () {
+                setTimeout(function () {
+                    checkURLchange();
+                }, 500);
+            });
+
         }
-
-        checkURLchange(currentURL);
-
-        $(".classroom-toc-item__link").click(function () {
-            var currentURL = window.location.href;
-            checkURLchange(currentURL);
-        });
-
-
     }
 
 
