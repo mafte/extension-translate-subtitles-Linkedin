@@ -2,62 +2,62 @@ if (window.location.hostname == "www.linkedin.com") {
 
     window.onload = function () {
 
+        initialConfig();
+
         if ($('.classroom-media-screens').length != 0) {
 
-            console.log("%cTraduciendo subtitulos by \"Translate Subtitles Linkedin\"", 'color:green;background:#eeffee;padding: .2rem 1rem;');
-
-
-            /** Cambiamos el atributo de traduccion para permitirla */
-            $("html").attr("translate", "yes");
-
-            /** Presionamos el tab con la transcripcion */
-            $(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
-
-            /** Añadimos estilos necesarios */
-            var styles = `
-            .caption-custom{
-                position: absolute;
-                z-index: 1;
-                bottom: 78px;
-                pointer-events: none;
-                -webkit-transition: bottom .5s ease-in-out;
-                transition: bottom .5s ease-in-out;
-                background: black;
-                padding: .5rem 1rem;
+            if ($('.caption-custom').length === 0) {
+                $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
             }
-
-            .classroom-media-screens .classroom-transcript{
-                visibility: hidden;
-                position: fixed;
-                top: 0;
-                left: 0;
-                pointer-events: none;
-                width: 100vw;
-                z-index: 999999;
-            }
-
-            .classroom-media-screens .classroom-transcript .t-16{font-size:10px;}
-            `;
-
-            var styleSheet = document.createElement("style");
-            styleSheet.type = "text/css";
-            styleSheet.innerText = styles;
-            document.head.appendChild(styleSheet);
-
-            $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
 
             setTimeout(function () {
                 checkURLchange();
             }, 500);
-
-
-            // $(".classroom-toc-item__link").click(function () {
-            //     setTimeout(function () {
-            //         checkURLchange();
-            //     }, 500);
-            // });
-
         }
+
+    }
+
+    function initialConfig() {
+
+        console.log("%cInitial Configuration \"Translate Subtitles Linkedin\"", 'color:green;background:#eeffee;padding: .2rem 1rem;');
+
+        /** Cambiamos el atributo de traduccion para permitirla */
+        $("html").attr("translate", "yes");
+
+        /** Presionamos el tab con la transcripcion */
+        //$(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
+
+        /** Añadimos estilos necesarios */
+        var styles = `
+        .caption-custom{
+            position: absolute;
+            z-index: 1;
+            bottom: 78px;
+            pointer-events: none;
+            -webkit-transition: bottom .5s ease-in-out;
+            transition: bottom .5s ease-in-out;
+            background: black;
+            padding: .5rem 1rem;
+        }
+
+        .classroom-media-screens .classroom-transcript{
+            visibility: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            width: 100vw;
+            z-index: 999999;
+        }
+
+        .classroom-media-screens .classroom-transcript .t-16{font-size:10px;}
+        `;
+
+        var styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
+
     }
 
     function checkURLchange() {
@@ -78,9 +78,14 @@ if (window.location.hostname == "www.linkedin.com") {
 
         //Establecer el primer comentario en el video
         let firstComment = $("[data-sg='1']").text();
-        $('.caption-custom').text(firstComment);
 
-        let videoE = document.getElementById("vjs_video_3_html5_api");
+        if ($('.caption-custom').length != 0) {
+            $('.caption-custom').text(firstComment);
+        }else{
+            $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
+        }
+
+        let videoE = $('video.vjs-tech')[0];
         if (videoE) {
 
             videoE.addEventListener('timeupdate', (e) => {
@@ -123,8 +128,17 @@ if (window.location.hostname == "www.linkedin.com") {
 
     function onUrlChange() {
         // console.log('URL changed!' + location.href);
-        if ($('.classroom-media-screens').length != 0){
-            checkURLchange();
+        if ($('.classroom-media-screens').length != 0) {
+
+            console.log("%cTraduciendo subtitulos by \"Translate Subtitles Linkedin\"", 'color:green;background:#eeffee;padding: .2rem 1rem;');
+
+            if ($('.caption-custom').length === 0) {
+                $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
+            }
+
+            setTimeout(function () {
+                checkURLchange();
+            }, 500);
         }
     }
 
