@@ -4,7 +4,7 @@ if (window.location.hostname == "www.linkedin.com") {
 
         if ($('.classroom-media-screens').length != 0) {
 
-            console.log("Traduciendo subtitulos");
+            console.log("%cTraduciendo subtitulos by \"Translate Subtitles Linkedin\"", 'color:green;background:#eeffee;padding: .2rem 1rem;');
 
 
             /** Cambiamos el atributo de traduccion para permitirla */
@@ -46,68 +46,86 @@ if (window.location.hostname == "www.linkedin.com") {
 
             $('.vjs-text-track-display').after('<div class="caption-custom"></div>');
 
-
-            function checkURLchange() {
-
-                /** Presionamos el tab con la transcripcion */
-                $(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
-
-                $('.classroom-transcript').prependTo('.classroom-layout');
-
-                setTimeout(function () {
-                    $('.classroom-transcript__content .content-transcript-line').each(function (i, obj) {
-                        let idTranscription = $(this).attr('aria-id');
-                        let idTranscriptionSlice = idTranscription.replace('classroom-transcript-line-', '');
-                        //Establecer atributos en segundos
-                        $(this).attr('data-sg', Number(Number(idTranscriptionSlice) / 1000).toFixed());
-                    })
-                }, 100);
-
-                //Establecer el primer comentario en el video
-                let firstComment = $("[data-sg='1']").text();
-                $('.caption-custom').text(firstComment);
-
-                let videoE = document.getElementById("vjs_video_3_html5_api");
-                if (videoE) {
-
-                    videoE.addEventListener('timeupdate', (e) => {
-
-
-                        //let contentSubtitle = document.querySelector("[data-sg='" + String(Math.floor(e.target.currentTime)) +"']");
-                        let contentSubtitle = $("[data-sg='" + String(Math.floor(e.target.currentTime)) + "']").text();
-
-                        //let contentID = "[aria-id^='transcripts-component-line-" + String( (e.target.currentTime * 1000).toFixed() ) +"']";
-                        let textCaptionCurrent = $('.vjs-custom-captions-cue').text();
-
-
-                        if (contentSubtitle && (contentSubtitle != textCaptionCurrent)) {
-                            $('.caption-custom').text(contentSubtitle);
-                            //console.log(contentSubtitle);
-                        }
-
-                        if (videoE.currentTime > videoE.duration - 0.5) {
-                            // 0.5 is seconds before end.
-                            videoE.pause();
-                        }
-
-                    });
-                }
-
-            }
-
             setTimeout(function () {
                 checkURLchange();
             }, 500);
 
 
-            $(".classroom-toc-item__link").click(function () {
-                setTimeout(function () {
-                    checkURLchange();
-                }, 500);
-            });
+            // $(".classroom-toc-item__link").click(function () {
+            //     setTimeout(function () {
+            //         checkURLchange();
+            //     }, 500);
+            // });
 
         }
     }
 
+    function checkURLchange() {
+
+        /** Presionamos el tab con la transcripcion */
+        $(".classroom-layout__workspace-tab-container > button:nth-child(3)").trigger("click");
+
+        $('.classroom-transcript').prependTo('.classroom-layout');
+
+        setTimeout(function () {
+            $('.classroom-transcript__content .content-transcript-line').each(function (i, obj) {
+                let idTranscription = $(this).attr('aria-id');
+                let idTranscriptionSlice = idTranscription.replace('classroom-transcript-line-', '');
+                //Establecer atributos en segundos
+                $(this).attr('data-sg', Number(Number(idTranscriptionSlice) / 1000).toFixed());
+            })
+        }, 100);
+
+        //Establecer el primer comentario en el video
+        let firstComment = $("[data-sg='1']").text();
+        $('.caption-custom').text(firstComment);
+
+        let videoE = document.getElementById("vjs_video_3_html5_api");
+        if (videoE) {
+
+            videoE.addEventListener('timeupdate', (e) => {
+
+
+                //let contentSubtitle = document.querySelector("[data-sg='" + String(Math.floor(e.target.currentTime)) +"']");
+                let contentSubtitle = $("[data-sg='" + String(Math.floor(e.target.currentTime)) + "']").text();
+
+                //let contentID = "[aria-id^='transcripts-component-line-" + String( (e.target.currentTime * 1000).toFixed() ) +"']";
+                let textCaptionCurrent = $('.vjs-custom-captions-cue').text();
+
+
+                if (contentSubtitle && (contentSubtitle != textCaptionCurrent)) {
+                    $('.caption-custom').text(contentSubtitle);
+                    //console.log(contentSubtitle);
+                }
+
+                if (videoE.currentTime > videoE.duration - 0.5) {
+                    // 0.5 is seconds before end.
+                    videoE.pause();
+                }
+
+            });
+        }
+
+    }
+
+    let lastUrl = location.href;
+    new MutationObserver(() => {
+        const url = location.href;
+        if (url !== lastUrl) {
+            lastUrl = url;
+            onUrlChange();
+        }
+    }).observe(document, {
+        subtree: true,
+        childList: true
+    });
+
+
+    function onUrlChange() {
+        // console.log('URL changed!' + location.href);
+        if ($('.classroom-media-screens').length != 0){
+            checkURLchange();
+        }
+    }
 
 }
